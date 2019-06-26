@@ -50,14 +50,16 @@
         animateDrawLine();
 
     var lineLayer;
-    var maker;
+    var marker;
+    //获取台风信息
+    var land=typhoonTestData[0]['land'][0];
     // 自定义台风logo
     var myIcon = L.icon({
         iconUrl: 'typhoon.png',
         iconSize: [28, 28],
         iconAnchor: [10, 10]
     });
-    L.marker([18.7, 119.3], {icon: myIcon}).addTo(map);
+    
 
     //动态绘制折线
     function animateDrawLine(){
@@ -68,7 +70,7 @@
     var count=0;
     //定时器100ms,动态地塞入坐标数据
     var timer=setInterval(function(){
-        if(count<=length){
+        if(count<length){
             drawPoints.push(allpoints[count]);
             count++;
     //消除之前绘制的折线图层
@@ -76,9 +78,25 @@
             map.removeLayer(lineLayer);
                 lineLayer=null;
         }
+    //消除marker图层
+        if(marker && count !==length){
+            map.removeLayer(marker);
+            marker=null;
+        }
     //最新数据点drawpoints绘制折线
-            lineLayer=L.polyline(drawPoints,{color:'blue'}).addTo(map)
-        }else{
+            lineLayer=L.polyline(drawPoints,{color:'blue'}).addTo(map);
+
+    //根据最新数组最后一个点绘制marker
+            if(count===length){
+                map.removeLayer(marker);
+        //如果是台风最后一个点，则自动Popup弹窗
+        marker=L.marker(drawPoints[length-1],{icon:myIcon}).addTo(map)
+        .bindPopup("<b>"+ typhoonTestData[0]['name'] +"</b><br>"+land['info']+"<br>"+land['landtime']+"<br>经度："+land['lng']+"<br>纬度："+land['lat']+"<br>强度："+land['strong']+"<br><br><b>Author: Lv_Xinyan</b>").openPopup();
+          
+            }else{
+                marker=L.marker(drawPoints[count-1],{icon:myIcon}).addTo(map)
+            }    
+    }else{
     //取完数据后清除定时器
             clearInterval(timer);
 
