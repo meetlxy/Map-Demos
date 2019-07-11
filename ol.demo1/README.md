@@ -1,1 +1,1 @@
-# 基于Openlayers建立的一个地图demo
+# 基于Openlayers建立的一个地图社交系统demo
